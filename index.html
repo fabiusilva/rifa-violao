@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rifa do Violão Condor</title>
+<meta name="description" content="Concorra a um violão eletroacústico Condor. 1 número por R$ 10 ou 3 por R$ 20. Escolha seus números e pague no Pix.">
+<meta property="og:title" content="Rifa do Violão Condor">
+<meta property="og:description" content="1 número R$ 10 · 3 números R$ 20. Escolha os seus e pague no Pix.">
+<meta property="og:image" content="img/frente.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Página de venda: foto, preços, grade de 200 números, pedido em etapas (dados → Pix → comprovante) */
+:root{
+  --bg:#FAFAF8; --surface:#FFFFFF; --soft:#F4F4F2; --line:#E4E4E0; --line-strong:#D4D4CE;
+  --fg:#18181B; --muted:#52525B; --faint:#71717A;
+  --accent:#B45309; --accent-hover:#92400E; --on-accent:#FFFFFF; --accent-soft:#FEF3C7;
+  --tag-bg:#FEF3C7; --tag-fg:#78350F; --note-bg:#FFFBEB; --note-line:#FDE68A;
+  --ok:#15803D; --ok-soft:#DCFCE7; --err:#B91C1C; --err-soft:#FEE2E2;
+  --taken:#E7E5E0; --taken-fg:#8A8A84; --held:#F1EFEA;
+  --chip:#18181B; --on-chip:#FFFFFF; --backdrop:rgba(24,24,27,.55);
+  --font:'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#141412; --surface:#1C1C1A; --soft:#262623; --line:#2E2E2B; --line-strong:#3F3F3B;
+  --fg:#F4F4F2; --muted:#B4B4AE; --faint:#9A9A94;
+  --accent:#F59E0B; --accent-hover:#FBBF24; --on-accent:#1C1917; --accent-soft:#3B2A0F;
+  --tag-bg:#3B2A0F; --tag-fg:#FCD34D; --note-bg:#231C10; --note-line:#4A3A17;
+  --ok:#4ADE80; --ok-soft:#14321F; --err:#F87171; --err-soft:#3A1717;
+  --taken:#2A2A27; --taken-fg:#77776F; --held:#22221F;
+  --chip:#F4F4F2; --on-chip:#18181B; --backdrop:rgba(0,0,0,.7);
+  color-scheme: dark;
+}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+img{max-width:100%}
+a{color:var(--accent)} a:hover{color:var(--accent-hover)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none!important}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.band{background:var(--surface);border-block:1px solid var(--line)}
+section > .wrap{padding-block:72px}
+.stack{display:flex;flex-direction:column}
+.h2{font-size:clamp(28px,4vw,36px);font-weight:800;letter-spacing:-.02em}
+.lead{font-size:17px;color:var(--muted);max-width:60ch}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;font-size:17px;border:0;cursor:pointer}
+.btn:hover{background:var(--accent-hover);color:var(--on-accent)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--line-strong);color:var(--fg);text-decoration:none;font-weight:600;font-size:15px;background:transparent;cursor:pointer}
+.btn-ghost:hover{color:var(--fg);background:var(--soft)}
+
+header.wrap{padding-block:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:18px;letter-spacing:-.01em}
+
+.hero{display:flex;flex-wrap:wrap;gap:48px;align-items:center;padding-block:24px 64px}
+.hero > div{flex:1 1 400px;min-width:0}
+.tag{display:inline-flex;align-self:flex-start;padding:6px 14px;border-radius:999px;background:var(--tag-bg);color:var(--tag-fg);font-size:14px;font-weight:600}
+.hero h1{font-size:clamp(38px,6vw,56px);line-height:1.05;letter-spacing:-.03em;font-weight:800}
+.hero img{display:block;width:100%;height:clamp(380px,55vw,580px);object-fit:cover;object-position:center 40%;border-radius:24px;background:var(--soft)}
+.prices{display:flex;flex-wrap:wrap;gap:12px}
+.price{flex:1 1 150px;min-width:0;padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+.price .k{font-size:14px;color:var(--muted);font-weight:600}
+.price .v{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.price.best{border:2px solid var(--accent)}
+.price .b{font-size:13px;font-weight:700;color:var(--accent)}
+
+.progress{display:flex;flex-direction:column;gap:8px}
+.bar{height:10px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--line)}
+.bar > span{display:block;height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .6s ease}
+.progress small{font-size:14px;color:var(--muted)}
+
+/* grade */
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:18px;height:18px;border-radius:6px;display:inline-block;border:1px solid var(--line-strong)}
+.legend .l-free{background:var(--surface)}
+.legend .l-sel{background:var(--accent);border-color:var(--accent)}
+.legend .l-held{background:var(--held);border-style:dashed}
+.legend .l-sold{background:var(--taken);border-color:var(--taken)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px}
+.n{min-height:46px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;cursor:pointer;transition:transform .08s ease, background .15s ease}
+.n:hover{border-color:var(--accent)}
+.n:active{transform:scale(.96)}
+.n[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.n.held{background:var(--held);border-style:dashed;color:var(--taken-fg);cursor:not-allowed}
+.n.sold{background:var(--taken);border-color:var(--taken);color:var(--taken-fg);text-decoration:line-through;cursor:not-allowed}
+.n.held:hover,.n.sold:hover{border-color:var(--line-strong)}
+.n.sold:hover{border-color:var(--taken)}
+.grid-msg{padding:24px;border-radius:16px;background:var(--soft);color:var(--muted);text-align:center}
+.tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+
+/* barra fixa de seleção */
+.cart{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.08);padding-bottom:env(safe-area-inset-bottom,0px)}
+.cart .wrap{padding-block:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.cart .sum{display:flex;flex-direction:column;min-width:0}
+.cart .sum strong{font-size:20px;font-variant-numeric:tabular-nums}
+.cart .sum span{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.cart .tip{font-size:14px;font-weight:700;color:var(--accent)}
+body.has-cart{padding-bottom:120px}
+
+/* pedido aberto */
+.banner{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:16px;background:var(--accent-soft);border:1px solid var(--note-line)}
+
+/* janela do pedido */
+dialog{border:0;padding:0;border-radius:24px;background:var(--surface);color:var(--fg);width:min(560px, calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:0 24px 64px rgba(0,0,0,.3)}
+dialog::backdrop{background:var(--backdrop)}
+.dlg{display:flex;flex-direction:column;gap:20px;padding:28px}
+.dlg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dlg-head h2{font-size:24px;font-weight:800;letter-spacing:-.01em}
+.x{width:44px;height:44px;flex:none;border-radius:999px;border:0;background:var(--soft);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:600;font-size:15px}
+.field input{min-height:50px;padding:0 14px;border-radius:12px;border:1px solid var(--line-strong);background:var(--bg);font-size:17px}
+.field input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.hint{font-size:14px;color:var(--muted)}
+.msg{padding:12px 14px;border-radius:12px;font-size:15px}
+.msg.err{background:var(--err-soft);color:var(--err)}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}
+.summary{display:flex;flex-wrap:wrap;gap:8px 20px;padding:16px;border-radius:16px;background:var(--soft)}
+.summary div{display:flex;flex-direction:column}
+.summary small{font-size:13px;color:var(--muted)}
+.summary strong{font-size:17px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.timer{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:var(--accent-soft);color:var(--tag-fg);font-weight:600;font-size:15px}
+.timer b{font-variant-numeric:tabular-nums;font-size:18px}
+.timer.urgent{background:var(--err-soft);color:var(--err)}
+.qr{width:100%;max-width:240px;aspect-ratio:1;padding:12px;border-radius:16px;background:#FFFFFF;border:1px solid var(--line);margin:0 auto}
+.qr svg{display:block;width:100%;height:100%}
+.code{display:flex;gap:8px;flex-wrap:wrap}
+.code textarea{flex:1 1 220px;min-width:0;min-height:84px;resize:none;padding:12px;border-radius:12px;border:1px solid var(--line-strong);background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:12.5px;line-height:1.45;word-break:break-all}
+.upload{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:16px;border:2px dashed var(--line-strong)}
+.upload input[type=file]{font-size:15px;max-width:100%}
+.big-ok{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:12px 0}
+.big-ok .ic{width:64px;height:64px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--ok-soft);color:var(--ok)}
+.big-ok .ic.wait{background:var(--accent-soft);color:var(--accent)}
+
+.gallery{display:flex;flex-wrap:wrap;gap:20px}
+.gallery img{flex:1 1 280px;min-width:0;height:420px;object-fit:cover;border-radius:20px;background:var(--soft)}
+.cards{display:flex;flex-wrap:wrap;gap:20px;padding-bottom:72px}
+.card{flex:1 1 320px;min-width:0;padding:32px;border-radius:20px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
+.card.note{background:var(--note-bg);border-color:var(--note-line)}
+.card h3{font-size:22px;font-weight:700}
+.card p{color:var(--muted)}
+.check{display:flex;gap:12px;align-items:flex-start;color:var(--muted)}
+.check svg{flex:none;margin-top:3px;stroke:var(--ok)}
+.steps{display:flex;flex-wrap:wrap;gap:32px}
+.step{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.num{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:var(--chip);color:var(--on-chip);font-weight:700;font-size:18px}
+.step h3{font-size:20px;font-weight:700}
+.step p{color:var(--muted)}
+.faq{max-width:760px;margin:0 auto}
+.faq dl{margin:0;border-top:1px solid var(--line)}
+.faq dl > div{padding:20px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.faq dt{font-size:18px;font-weight:700}
+.faq dd{margin:0;color:var(--muted)}
+footer{border-top:1px solid var(--line)}
+footer .wrap{padding-block:32px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;font-size:14px;color:var(--muted)}
+.spin{width:18px;height:18px;border-radius:999px;border:2px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation-duration:.01s!important}}
+@media (max-width:480px){.dlg{padding:20px}.grid{grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="brand">Rifa do Violão</div>
+  <a class="btn-ghost" href="#numeros">Escolher números</a>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="stack" style="gap:22px">
+      <span class="tag">Sorteio em [DATA DO SORTEIO]</span>
+      <h1>Concorra a um violão elétrico Condor</h1>
+      <p class="lead" style="font-size:19px">Eletroacústico, corte cutaway e acabamento sunburst. Pronto para plugar e tocar.</p>
+      <div class="prices">
+        <div class="price"><div class="k">1 número</div><div class="v">R$ 10</div></div>
+        <div class="price best"><div class="k">3 números</div><div class="v">R$ 20</div><div class="b">Compre 3, pague 2</div></div>
+      </div>
+      <div class="progress" aria-live="polite">
+        <div class="bar"><span id="barFill"></span></div>
+        <small id="barText">Carregando números…</small>
+      </div>
+      <div><a class="btn" href="#numeros">Escolher meus números</a></div>
+    </div>
+    <div><img src="img/frente.jpg" alt="Violão elétrico Condor sunburst, visto de frente"></div>
+  </div>
+</div>
+
+<section id="numeros" class="band">
+  <div class="wrap stack" style="gap:24px">
+    <div class="stack" style="gap:8px">
+      <h2 class="h2">Escolha seus números</h2>
+      <p class="lead">Toque nos números livres. A cada 3 números, você paga só 2. Depois de reservar, você tem 15 minutos para pagar e enviar o comprovante.</p>
+    </div>
+    <div class="banner" id="openOrder" hidden>
+      <span id="openOrderText">Você tem um pedido aberto.</span>
+      <button type="button" class="btn-ghost" id="openOrderBtn">Ver meu pedido</button>
+    </div>
+    <div class="tools">
+      <div class="legend">
+        <span><i class="l-free"></i>Livre</span>
+        <span><i class="l-sel"></i>Escolhido</span>
+        <span><i class="l-held"></i>Reservado</span>
+        <span><i class="l-sold"></i>Vendido</span>
+      </div>
+      <button type="button" class="btn-ghost" id="luckyBtn">Escolher 3 aleatórios</button>
+    </div>
+    <div class="grid" id="grid" aria-label="Números da rifa"></div>
+    <div class="grid-msg" id="gridMsg">Carregando números…</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack" style="gap:32px">
+    <h2 class="h2">Fotos reais do violão</h2>
+    <div class="gallery">
+      <img src="img/frente.jpg" alt="Violão de frente, pendurado na parede" loading="lazy">
+      <img src="img/lateral.jpg" alt="Violão em ângulo, mostrando a lateral e o equalizador" loading="lazy">
+      <img src="img/varanda.jpg" alt="Violão de pé no suporte" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="cards">
+    <div class="card">
+      <h3>O que vem</h3>
+      <div class="stack" style="gap:12px">
+        <div class="check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Violão Condor eletroacústico, 6 cordas de aço</span></div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Equalizador na lateral, para ligar na caixa de som</span></div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Corte cutaway, que facilita as notas agudas</span></div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Acabamento sunburst</span></div>
+      </div>
+    </div>
+    <div class="card note">
+      <h3>Estado do violão</h3>
+      <p>É um violão <strong style="color:var(--fg)">usado</strong>. Tem marcas de uso e alguns arranhões no corpo e no braço, como dá para ver nas fotos. Nada escondido: o que você vê é o que vai receber.</p>
+      <p>Quer ver mais de perto? Chame no WhatsApp <strong style="color:var(--fg)">(98) 99967-9927</strong> que mandamos fotos ou vídeo dos detalhes.</p>
+    </div>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap stack" style="gap:40px">
+    <h2 class="h2">Como participar</h2>
+    <div class="steps">
+      <div class="step"><span class="num">1</span><h3>Escolha os números</h3><p>Toque nos números livres e clique em Reservar. Eles ficam guardados para você por 15 minutos.</p></div>
+      <div class="step"><span class="num">2</span><h3>Pague pelo Pix</h3><p>O QR Code já vem com o valor certo. Também dá para usar o Pix copia e cola.</p></div>
+      <div class="step"><span class="num">3</span><h3>Envie o comprovante</h3><p>Mande a foto ou o print do comprovante aqui mesmo no site.</p></div>
+      <div class="step"><span class="num">4</span><h3>Receba a confirmação</h3><p>Conferimos o pagamento e confirmamos seus números no WhatsApp.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="faq stack" style="gap:24px">
+      <h2 class="h2">Dúvidas</h2>
+      <dl>
+        <div><dt>Quando é o sorteio?</dt><dd>Dia [DATA DO SORTEIO], ou antes, se todos os 200 números forem vendidos.</dd></div>
+        <div><dt>Como é feito o sorteio?</dt><dd>[COMO SERÁ O SORTEIO — ex.: ao vivo no Instagram, ou pelo resultado da Loteria Federal].</dd></div>
+        <div><dt>E se eu não pagar em 15 minutos?</dt><dd>A reserva acaba e os números voltam a ficar livres. Basta escolher de novo.</dd></div>
+        <div><dt>Já enviei o comprovante. E agora?</dt><dd>Seus números ficam guardados enquanto conferimos. Você recebe a confirmação no WhatsApp que informou.</dd></div>
+        <div><dt>Como recebo o violão se eu ganhar?</dt><dd>Entrega em mãos em São Luís/MA. Para outras cidades, combinamos o envio.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Rifa do Violão Condor · Organização: Fabio Pereira Silva · São Luís/MA</span>
+    <span>WhatsApp: (98) 99967-9927</span>
+  </div>
+</footer>
+
+<div class="cart" id="cart" hidden>
+  <div class="wrap">
+    <div class="sum">
+      <strong id="cartTotal">R$ 0</strong>
+      <span id="cartNums"></span>
+      <span class="tip" id="cartTip" hidden></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn-ghost" id="clearBtn">Limpar</button>
+      <button type="button" class="btn" id="reserveBtn">Reservar</button>
+    </div>
+  </div>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg">
+    <div class="dlg-head">
+      <h2 id="dlgTitle">Seus dados</h2>
+      <button type="button" class="x" id="closeBtn" aria-label="Fechar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+
+    <!-- etapa 1: dados -->
+    <form id="stepForm" class="stack" style="gap:16px" novalidate>
+      <div class="summary">
+        <div><small>Números</small><strong id="fNums"></strong></div>
+        <div><small>Total</small><strong id="fTotal"></strong></div>
+      </div>
+      <div class="field">
+        <label for="nome">Seu nome</label>
+        <input id="nome" name="nome" autocomplete="name" required minlength="3" maxlength="80" placeholder="Nome e sobrenome">
+      </div>
+      <div class="field">
+        <label for="zap">Seu WhatsApp</label>
+        <input id="zap" name="zap" type="tel" inputmode="tel" autocomplete="tel" required placeholder="(98) 99999-9999">
+        <span class="hint">É por aqui que você recebe a confirmação dos números.</span>
+      </div>
+      <div class="msg err" id="formErr" role="alert" hidden></div>
+      <button class="btn" type="submit" id="formBtn">Reservar por 15 minutos</button>
+    </form>
+
+    <!-- etapa 2: pagamento -->
+    <div id="stepPay" class="stack" style="gap:16px" hidden>
+      <div class="summary">
+        <div><small>Pedido</small><strong id="pCode"></strong></div>
+        <div><small>Números</small><strong id="pNums"></strong></div>
+        <div><small>Total</small><strong id="pTotal"></strong></div>
+      </div>
+      <div class="timer" id="pTimer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg><span>Pague e envie o comprovante em <b id="pLeft">15:00</b></span></div>
+      <div class="qr" id="qr" role="img" aria-label="QR Code Pix"></div>
+      <div class="stack" style="gap:8px">
+        <label class="hint" for="pixcode" style="font-weight:600">Pix copia e cola</label>
+        <div class="code">
+          <textarea id="pixcode" readonly></textarea>
+          <button type="button" class="btn-ghost" id="copyBtn" style="align-self:stretch">Copiar</button>
+        </div>
+        <span class="hint" id="copyMsg" aria-live="polite">Pix para Fabio Pereira Silva · chave (98) 99967-9927</span>
+      </div>
+      <div class="upload">
+        <label for="file" style="font-weight:700">Já pagou? Envie o comprovante</label>
+        <input id="file" type="file" accept="image/*,application/pdf">
+        <span class="hint">Foto ou print do comprovante, ou o PDF do banco. Até 5 MB.</span>
+        <div class="msg err" id="upErr" role="alert" hidden></div>
+        <button type="button" class="btn" id="upBtn" disabled>Enviar comprovante</button>
+      </div>
+    </div>
+
+    <!-- etapa 3: em análise -->
+    <div id="stepWait" class="big-ok" hidden>
+      <span class="ic wait"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+      <h3 style="font-size:22px">Comprovante recebido</h3>
+      <p class="lead">Estamos conferindo o pagamento do pedido <strong id="wCode"></strong>. Seus números <strong id="wNums"></strong> ficam guardados para você.</p>
+      <p class="hint">A confirmação chega no seu WhatsApp. Pode fechar esta página.</p>
+    </div>
+
+    <!-- etapa 4: pago -->
+    <div id="stepDone" class="big-ok" hidden>
+      <span class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span>
+      <h3 style="font-size:22px">Pagamento confirmado</h3>
+      <p class="lead">Seus números são <strong id="dNums"></strong>. Boa sorte!</p>
+      <button type="button" class="btn-ghost" id="newBtn">Comprar mais números</button>
+    </div>
+
+    <!-- etapa: expirado / recusado -->
+    <div id="stepEnd" class="big-ok" hidden>
+      <span class="ic wait"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg></span>
+      <h3 style="font-size:22px" id="eTitle">Reserva expirada</h3>
+      <p class="lead" id="eText">O tempo de 15 minutos acabou e os números voltaram a ficar livres.</p>
+      <button type="button" class="btn" id="againBtn">Escolher números de novo</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="qrcode.js"></script>
+<script>
+/* ===================== CONFIGURAÇÃO ===================== */
+var CONFIG = {
+  SUPABASE_URL: 'https://cjppjbmizbtdqhacwhph.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqcHBqYm1pemJ0ZHFoYWN3aHBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MDIwNjUsImV4cCI6MjEwODQ3ODA2NX0.6safcpw2Orw25cSXtJPpBTzzNSL054oyU9JispPCAm4',
+  PIX_CHAVE: '+5598999679927',
+  PIX_NOME: 'FABIO PEREIRA SILVA',
+  PIX_CIDADE: 'SAO LUIS',
+  TOTAL_NUMEROS: 200
+};
+/* ======================================================== */
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var state = { mapa: {}, sel: [], pedido: null, token: null, timer: null, poll: null };
+  var LS_KEY = 'rifa_condor_token';
+
+  // ---------- utilidades ----------
+  function pad(n){ return String(n).padStart(3, '0'); }
+  function preco(q){ return Math.floor(q/3)*20 + (q%3)*10; }
+  function brl(v){ return 'R$ ' + Number(v).toFixed(2).replace('.', ','); }
+  function brlShort(v){ return 'R$ ' + (Number(v) % 1 ? Number(v).toFixed(2).replace('.', ',') : Number(v)); }
+  function lsGet(){ try { return localStorage.getItem(LS_KEY); } catch(e){ return null; } }
+  function lsSet(v){ try { v ? localStorage.setItem(LS_KEY, v) : localStorage.removeItem(LS_KEY); } catch(e){} }
+
+  function api(path, opts){
+    opts = opts || {};
+    var headers = Object.assign({
+      apikey: CONFIG.SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + CONFIG.SUPABASE_ANON_KEY
+    }, opts.headers || {});
+    return fetch(CONFIG.SUPABASE_URL + path, { method: opts.method || 'POST', headers: headers, body: opts.body })
+      .then(function(r){
+        return r.text().then(function(t){
+          var data = null; try { data = t ? JSON.parse(t) : null; } catch(e){ data = t; }
+          if (!r.ok) {
+            var msg = (data && (data.message || data.error)) || 'Não deu certo. Tente de novo.';
+            throw new Error(msg);
+          }
+          return data;
+        });
+      });
+  }
+  function rpc(fn, args){
+    return api('/rest/v1/rpc/' + fn, { body: JSON.stringify(args || {}), headers: { 'Content-Type': 'application/json' } });
+  }
+
+  // ---------- Pix (BR Code) ----------
+  function f(id, v){ return id + String(v.length).padStart(2,'0') + v; }
+  function crc16(s){
+    var c = 0xFFFF;
+    for (var i=0;i<s.length;i++){ c ^= s.charCodeAt(i) << 8;
+      for (var j=0;j<8;j++) c = (c & 0x8000) ? ((c<<1) ^ 0x1021) & 0xFFFF : (c<<1) & 0xFFFF; }
+    return c.toString(16).toUpperCase().padStart(4,'0');
+  }
+  function pixCode(valor, txid){
+    var p = f('00','01') + f('26', f('00','br.gov.bcb.pix') + f('01', CONFIG.PIX_CHAVE))
+      + f('52','0000') + f('53','986') + f('54', Number(valor).toFixed(2)) + f('58','BR')
+      + f('59', CONFIG.PIX_NOME) + f('60', CONFIG.PIX_CIDADE) + f('62', f('05', txid || '***')) + '6304';
+    return p + crc16(p);
+  }
+
+  // ---------- grade ----------
+  function buildGrid(){
+    var g = $('grid'), html = '';
+    for (var i=1;i<=CONFIG.TOTAL_NUMEROS;i++){
+      html += '<button type="button" class="n" id="n'+i+'" data-n="'+i+'" aria-pressed="false">'+pad(i)+'</button>';
+    }
+    g.innerHTML = html;
+    g.addEventListener('click', function(e){
+      var b = e.target.closest('.n'); if (!b) return;
+      var n = +b.dataset.n, s = state.mapa[n];
+      if (s && s !== 'livre') return;
+      var i = state.sel.indexOf(n);
+      if (i >= 0) state.sel.splice(i,1); else { if (state.sel.length >= 30) return; state.sel.push(n); }
+      state.sel.sort(function(a,b){return a-b;});
+      paint();
+    });
+  }
+  function paint(){
+    var sold = 0, held = 0;
+    for (var i=1;i<=CONFIG.TOTAL_NUMEROS;i++){
+      var b = $('n'+i), s = state.mapa[i] || 'livre';
+      b.classList.toggle('sold', s === 'vendido');
+      b.classList.toggle('held', s === 'reservado');
+      if (s === 'vendido') sold++; else if (s === 'reservado') held++;
+      if (s !== 'livre' && state.sel.indexOf(i) >= 0) state.sel.splice(state.sel.indexOf(i),1);
+      var on = state.sel.indexOf(i) >= 0;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.disabled = s !== 'livre';
+      b.setAttribute('aria-label', 'Número ' + pad(i) + (s === 'vendido' ? ', vendido' : s === 'reservado' ? ', reservado' : on ? ', escolhido' : ', livre'));
+    }
+    var livres = CONFIG.TOTAL_NUMEROS - sold - held;
+    $('barFill').style.width = (sold / CONFIG.TOTAL_NUMEROS * 100) + '%';
+    $('barText').textContent = sold + ' de ' + CONFIG.TOTAL_NUMEROS + ' números vendidos · ' + livres + ' livres';
+    // carrinho
+    var q = state.sel.length;
+    $('cart').hidden = q === 0;
+    document.body.classList.toggle('has-cart', q > 0);
+    if (q){
+      $('cartTotal').textContent = q + (q === 1 ? ' número · ' : ' números · ') + brlShort(preco(q));
+      $('cartNums').textContent = state.sel.map(pad).join(', ');
+      var tip = $('cartTip');
+      if (q % 3 === 2){ tip.hidden = false; tip.textContent = 'Escolha mais 1 número sem pagar nada a mais'; }
+      else if (q % 3 === 1 && q > 1){ tip.hidden = false; tip.textContent = 'Mais 2 números saem por só R$ 10'; }
+      else if (q === 1){ tip.hidden = false; tip.textContent = 'Leve 3 por R$ 20'; }
+      else tip.hidden = true;
+    }
+  }
+  function loadMapa(){
+    return rpc('rifa_mapa').then(function(rows){
+      var m = {}; (rows || []).forEach(function(r){ m[r.numero] = r.situacao; });
+      state.mapa = m; $('gridMsg').hidden = true; paint();
+    }).catch(function(){
+      $('gridMsg').hidden = false;
+      $('gridMsg').textContent = 'Não consegui carregar os números. Verifique a internet e recarregue a página.';
+    });
+  }
+
+  $('luckyBtn').addEventListener('click', function(){
+    var livres = [];
+    for (var i=1;i<=CONFIG.TOTAL_NUMEROS;i++) if ((state.mapa[i]||'livre') === 'livre' && state.sel.indexOf(i) < 0) livres.push(i);
+    for (var k=0;k<3 && livres.length;k++){ var j = Math.floor(Math.random()*livres.length); state.sel.push(livres.splice(j,1)[0]); }
+    state.sel.sort(function(a,b){return a-b;}); paint();
+  });
+  $('clearBtn').addEventListener('click', function(){ state.sel = []; paint(); });
+
+  // ---------- janela ----------
+  var dlg = $('dlg');
+  function openDlg(){ if (!dlg.open) { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open',''); } }
+  function closeDlg(){ if (dlg.open) dlg.close ? dlg.close() : dlg.removeAttribute('open'); }
+  dlg.addEventListener('close', function(){ stopTimers(); });
+  $('closeBtn').addEventListener('click', closeDlg);
+  function show(step, title){
+    ['stepForm','stepPay','stepWait','stepDone','stepEnd'].forEach(function(s){ $(s).hidden = s !== step; });
+    $('dlgTitle').textContent = title;
+    openDlg();
+  }
+  function stopTimers(){ clearInterval(state.timer); clearInterval(state.poll); state.timer = state.poll = null; }
+
+  $('reserveBtn').addEventListener('click', function(){
+    if (!state.sel.length) return;
+    $('fNums').textContent = state.sel.map(pad).join(', ');
+    $('fTotal').textContent = brl(preco(state.sel.length));
+    $('formErr').hidden = true;
+    show('stepForm', 'Seus dados');
+    setTimeout(function(){ $('nome').focus(); }, 50);
+  });
+
+  $('zap').addEventListener('input', function(e){
+    var d = e.target.value.replace(/\D/g,'').slice(0,11);
+    var out = d;
+    if (d.length > 2) out = '(' + d.slice(0,2) + ') ' + d.slice(2);
+    if (d.length > 7) out = '(' + d.slice(0,2) + ') ' + d.slice(2, d.length-4) + '-' + d.slice(-4);
+    e.target.value = out;
+  });
+
+  $('stepForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var nome = $('nome').value.trim(), zap = $('zap').value.replace(/\D/g,'');
+    var err = $('formErr');
+    if (nome.length < 3){ err.hidden = false; err.textContent = 'Digite seu nome.'; return; }
+    if (zap.length < 10){ err.hidden = false; err.textContent = 'Digite seu WhatsApp com DDD.'; return; }
+    err.hidden = true;
+    var btn = $('formBtn'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Reservando…';
+    rpc('rifa_reservar', { p_numeros: state.sel, p_nome: nome, p_whatsapp: zap })
+      .then(function(p){
+        state.token = p.token; lsSet(p.token); state.sel = [];
+        state.pedido = p; showPay(p); loadMapa(); refreshBanner();
+      })
+      .catch(function(ex){ err.hidden = false; err.textContent = ex.message; loadMapa(); })
+      .then(function(){ btn.disabled = false; btn.textContent = 'Reservar por 15 minutos'; });
+  });
+
+  function showPay(p){
+    show('stepPay', 'Pague com Pix');
+    $('pCode').textContent = p.codigo;
+    $('pNums').textContent = p.numeros.map(pad).join(', ');
+    $('pTotal').textContent = brl(p.valor);
+    var code = pixCode(p.valor, 'RIFA' + p.codigo);
+    $('pixcode').value = code;
+    $('copyMsg').textContent = 'Pix para Fabio Pereira Silva · chave (98) 99967-9927';
+    try {
+      var q = qrcode(0, 'M'); q.addData(code); q.make();
+      $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+      $('qr').setAttribute('aria-label', 'QR Code Pix de ' + brl(p.valor));
+    } catch(e){ $('qr').hidden = true; }
+    $('file').value = ''; $('upBtn').disabled = true; $('upErr').hidden = true;
+    stopTimers();
+    var end = new Date(p.expira_em).getTime();
+    function tick(){
+      var ms = end - Date.now();
+      if (ms <= 0){ stopTimers(); showEnd('expirado'); loadMapa(); return; }
+      var m = Math.floor(ms/60000), s = Math.floor(ms%60000/1000);
+      $('pLeft').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      $('pTimer').classList.toggle('urgent', ms < 3*60*1000);
+    }
+    tick(); state.timer = setInterval(tick, 1000);
+  }
+  function showWait(p){
+    $('wCode').textContent = p.codigo; $('wNums').textContent = p.numeros.map(pad).join(', ');
+    show('stepWait', 'Pedido ' + p.codigo);
+    stopTimers();
+    state.poll = setInterval(function(){
+      rpc('rifa_pedido', { p_token: state.token }).then(function(np){ if (np && np.status !== 'em_analise') route(np); }).catch(function(){});
+    }, 15000);
+  }
+  function showDone(p){
+    $('dNums').textContent = p.numeros.map(pad).join(', ');
+    show('stepDone', 'Pedido ' + p.codigo);
+    stopTimers();
+  }
+  function showEnd(kind){
+    if (kind === 'recusado'){
+      $('eTitle').textContent = 'Pagamento não confirmado';
+      $('eText').textContent = 'Não conseguimos confirmar este pagamento e os números foram liberados. Se você pagou, fale com a gente no WhatsApp (98) 99967-9927.';
+    } else {
+      $('eTitle').textContent = 'Reserva expirada';
+      $('eText').textContent = 'O tempo de 15 minutos acabou e os números voltaram a ficar livres. Você pode escolher de novo.';
+    }
+    show('stepEnd', kind === 'recusado' ? 'Pedido recusado' : 'Tempo esgotado');
+    lsSet(null); state.token = null; refreshBanner();
+  }
+  function route(p){
+    state.pedido = p;
+    if (p.status === 'reservado') showPay(p);
+    else if (p.status === 'em_analise') showWait(p);
+    else if (p.status === 'pago') showDone(p);
+    else showEnd(p.status);
+    loadMapa(); refreshBanner();
+  }
+
+  $('copyBtn').addEventListener('click', function(){
+    var ta = $('pixcode');
+    function fallback(){ ta.focus(); ta.select(); $('copyMsg').textContent = 'Código selecionado. Copie e cole no app do banco.'; }
+    try { navigator.clipboard.writeText(ta.value).then(function(){ $('copyMsg').textContent = 'Código copiado. Cole no app do seu banco, na opção Pix copia e cola.'; }, fallback); }
+    catch(e){ fallback(); }
+  });
+
+  $('file').addEventListener('change', function(){
+    var fl = this.files && this.files[0], err = $('upErr');
+    err.hidden = true;
+    if (fl && fl.size > 5*1024*1024){ err.hidden = false; err.textContent = 'Arquivo maior que 5 MB. Envie um print da tela.'; $('upBtn').disabled = true; return; }
+    $('upBtn').disabled = !fl;
+  });
+
+  $('upBtn').addEventListener('click', function(){
+    var fl = $('file').files[0]; if (!fl || !state.token) return;
+    var err = $('upErr'), btn = this;
+    var ext = (fl.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5) || 'jpg';
+    var path = state.token + '/' + Date.now() + '.' + ext;
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Enviando…'; err.hidden = true;
+    api('/storage/v1/object/comprovantes/' + path, {
+      body: fl, headers: { 'Content-Type': fl.type || 'image/jpeg', 'x-upsert': 'false' }
+    })
+    .then(function(){ return rpc('rifa_enviar_comprovante', { p_token: state.token, p_path: path }); })
+    .then(function(){ return rpc('rifa_pedido', { p_token: state.token }); })
+    .then(function(p){ route(p); })
+    .catch(function(ex){
+      err.hidden = false;
+      err.textContent = /expir/i.test(ex.message) ? 'Sua reserva expirou. Escolha os números de novo.' :
+        /row-level|policy|Unauthorized|403/i.test(ex.message) ? 'Não foi possível enviar. Sua reserva pode ter expirado.' : ex.message;
+    })
+    .then(function(){ btn.disabled = false; btn.textContent = 'Enviar comprovante'; });
+  });
+
+  $('againBtn').addEventListener('click', function(){ closeDlg(); location.hash = '#numeros'; });
+  $('newBtn').addEventListener('click', function(){ lsSet(null); state.token = null; refreshBanner(); closeDlg(); location.hash = '#numeros'; });
+
+  // ---------- pedido aberto ----------
+  function refreshBanner(){
+    var p = state.pedido, show = state.token && p && (p.status === 'reservado' || p.status === 'em_analise' || p.status === 'pago');
+    $('openOrder').hidden = !show;
+    if (show){
+      $('openOrderText').textContent =
+        p.status === 'reservado' ? 'Pedido ' + p.codigo + ' aguardando pagamento (' + p.numeros.map(pad).join(', ') + ').' :
+        p.status === 'em_analise' ? 'Pedido ' + p.codigo + ' em conferência.' :
+        'Pedido ' + p.codigo + ' confirmado: ' + p.numeros.map(pad).join(', ') + '.';
+    }
+  }
+  $('openOrderBtn').addEventListener('click', function(){ if (state.pedido) route(state.pedido); });
+
+  // ---------- início ----------
+  buildGrid();
+  loadMapa();
+  setInterval(function(){ if (!document.hidden) loadMapa(); }, 20000);
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) loadMapa(); });
+
+  state.token = lsGet();
+  if (state.token){
+    rpc('rifa_pedido', { p_token: state.token }).then(function(p){
+      if (!p){ lsSet(null); state.token = null; return; }
+      state.pedido = p;
+      if (p.status === 'expirado' || p.status === 'recusado'){ lsSet(null); state.token = null; }
+      refreshBanner();
+    }).catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
