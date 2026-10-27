@@ -7,7 +7,7 @@
 <meta name="description" content="Concorra a um violão Condor. 1 número por R$ 10 ou 3 por R$ 20. Escolha seus números e pague no Pix.">
 <meta property="og:title" content="Rifa do Violão Condor">
 <meta property="og:description" content="1 número R$ 10 · 3 números R$ 20. Escolha os seus e pague no Pix.">
-<meta property="og:image" content="img/frente.jpg">
+<meta property="og:image" content="video/capa.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
@@ -142,6 +142,8 @@ dialog::backdrop{background:var(--backdrop)}
 .big-ok .ic{width:64px;height:64px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--ok-soft);color:var(--ok)}
 .big-ok .ic.wait{background:var(--accent-soft);color:var(--accent)}
 
+.video-block{display:flex;flex-wrap:wrap;gap:32px 48px;align-items:center;padding-block:72px 0}
+.promo{display:block;width:100%;max-width:360px;aspect-ratio:9/16;border-radius:24px;background:#000;margin-inline:auto;object-fit:cover}
 .gallery{display:flex;flex-wrap:wrap;gap:20px}
 .gallery img{flex:1 1 280px;min-width:0;height:420px;object-fit:cover;border-radius:20px;background:var(--soft)}
 .cards{display:flex;flex-wrap:wrap;gap:20px;padding-bottom:72px}
@@ -221,6 +223,16 @@ footer .wrap{padding-block:32px;display:flex;flex-wrap:wrap;justify-content:spac
 </section>
 
 <section>
+  <div class="wrap video-block">
+    <div class="stack" style="gap:12px;flex:1 1 320px;min-width:0">
+      <h2 class="h2">Veja o violão de perto</h2>
+      <p class="lead">22 segundos mostrando o violão, os arranhões e as marcas de uso. Sem filtro e sem esconder nada.</p>
+    </div>
+    <video class="promo" src="video/rifa-violao.mp4" poster="video/capa.jpg" controls playsinline preload="metadata"></video>
+  </div>
+</section>
+
+<section>
   <div class="wrap stack" style="gap:32px">
     <h2 class="h2">Fotos reais do violão</h2>
     <div class="gallery">
@@ -244,7 +256,7 @@ footer .wrap{padding-block:32px;display:flex;flex-wrap:wrap;justify-content:spac
     <div class="card note">
       <h3>Estado do violão</h3>
       <p>É um violão <strong style="color:var(--fg)">usado</strong>. Tem marcas de uso e alguns arranhões no corpo e no braço, como dá para ver nas fotos. Nada escondido: o que você vê é o que vai receber.</p>
-      <p><strong style="color:var(--fg)">A parte elétrica não funciona.</strong> O equalizador e a saída para caixa de som estão sem funcionar.</p>
+      <p><strong style="color:var(--fg)">A parte elétrica precisa de reparo.</strong> O equalizador e a saída para caixa de som não estão funcionando.</p>
       <p>Quer ver mais de perto? Chame no WhatsApp <strong style="color:var(--fg)">(98) 99967-9927</strong> que mandamos fotos ou vídeo dos detalhes.</p>
     </div>
   </div>
