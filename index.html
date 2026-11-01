@@ -353,13 +353,13 @@ footer .wrap{padding-block:32px;display:flex;flex-wrap:wrap;justify-content:spac
           <textarea id="pixcode" readonly></textarea>
           <button type="button" class="btn-ghost" id="copyBtn" style="align-self:stretch">Copiar</button>
         </div>
-        <span class="hint" id="copyMsg" aria-live="polite">Pix para Fabio Pereira Silva · chave (98) 99967-9927</span>
+        <span class="hint" id="copyMsg" aria-live="polite">Pix para Fabio Pereira Silva</span>
       </div>
       <div class="stack keybox" style="gap:10px">
         <strong style="font-size:16px">Deu erro no app do banco? Pague pela chave</strong>
-        <span class="hint">No app do banco, escolha <b>Pix → Pagar com chave → Celular</b>, cole a chave e digite o valor <b id="kValor">R$ 20,00</b>.</span>
+        <span class="hint">No app do banco, escolha <b>Pix → Pagar com chave</b>, cole a chave abaixo e digite o valor <b id="kValor">R$ 20,00</b>.</span>
         <div class="code">
-          <span class="keyval">98999679927</span>
+          <span class="keyval" style="font-size:13px;word-break:break-all;padding-block:10px">983269ba-c4cd-4dcb-8755-a71e64b3d96f</span>
           <button type="button" class="btn-ghost" id="copyKeyBtn" style="align-self:stretch">Copiar chave</button>
         </div>
         <span class="hint" id="keyMsg" aria-live="polite">Confira se aparece o nome Fabio Pereira Silva antes de confirmar.</span>
@@ -406,7 +406,7 @@ footer .wrap{padding-block:32px;display:flex;flex-wrap:wrap;justify-content:spac
 var CONFIG = {
   SUPABASE_URL: 'https://cjppjbmizbtdqhacwhph.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqcHBqYm1pemJ0ZHFoYWN3aHBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MDIwNjUsImV4cCI6MjEwODQ3ODA2NX0.6safcpw2Orw25cSXtJPpBTzzNSL054oyU9JispPCAm4',
-  PIX_CHAVE: '+5598999679927',
+  PIX_CHAVE: '983269ba-c4cd-4dcb-8755-a71e64b3d96f',   // chave aleatória gerada no app do banco
   PIX_NOME: 'FABIO PEREIRA SILVA',
   PIX_CIDADE: 'SAO LUIS',
   TOTAL_NUMEROS: 300
@@ -457,7 +457,7 @@ var CONFIG = {
     return c.toString(16).toUpperCase().padStart(4,'0');
   }
   function pixCode(valor, txid){
-    var p = f('00','01') + f('26', f('00','br.gov.bcb.pix') + f('01', CONFIG.PIX_CHAVE))
+    var p = f('00','01') + f('01','11') + f('26', f('00','br.gov.bcb.pix') + f('01', CONFIG.PIX_CHAVE))
       + f('52','0000') + f('53','986') + f('54', Number(valor).toFixed(2)) + f('58','BR')
       + f('59', CONFIG.PIX_NOME) + f('60', CONFIG.PIX_CIDADE) + f('62', f('05', txid || '***')) + '6304';
     return p + crc16(p);
@@ -583,7 +583,7 @@ var CONFIG = {
     $('kValor').textContent = brl(p.valor);
     var code = pixCode(p.valor, 'RIFA' + p.codigo);
     $('pixcode').value = code;
-    $('copyMsg').textContent = 'Pix para Fabio Pereira Silva · chave (98) 99967-9927';
+    $('copyMsg').textContent = 'Pix para Fabio Pereira Silva';
     try {
       var q = qrcode(0, 'M'); q.addData(code); q.make();
       $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
@@ -636,8 +636,8 @@ var CONFIG = {
 
   $('copyKeyBtn').addEventListener('click', function(){
     var ok = function(){ $('keyMsg').textContent = 'Chave copiada. Cole no app do banco em Pix → Pagar com chave.'; };
-    var no = function(){ $('keyMsg').textContent = 'Não consegui copiar. Digite a chave: 98999679927'; };
-    try { navigator.clipboard.writeText('98999679927').then(ok, no); } catch(e){ no(); }
+    var no = function(){ $('keyMsg').textContent = 'Não consegui copiar. Toque e segure na chave para copiar.'; };
+    try { navigator.clipboard.writeText('983269ba-c4cd-4dcb-8755-a71e64b3d96f').then(ok, no); } catch(e){ no(); }
   });
   $('copyBtn').addEventListener('click', function(){
     var ta = $('pixcode');
