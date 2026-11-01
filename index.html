@@ -346,25 +346,19 @@ footer .wrap{padding-block:32px;display:flex;flex-wrap:wrap;justify-content:spac
         <div><small>Total</small><strong id="pTotal"></strong></div>
       </div>
       <div class="timer" id="pTimer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg><span>Pague e envie o comprovante em <b id="pLeft">15:00</b></span></div>
-      <div class="qr" id="qr" role="img" aria-label="QR Code Pix"></div>
-      <div class="stack" style="gap:8px">
-        <label class="hint" for="pixcode" style="font-weight:600">Pix copia e cola</label>
+      <div class="stack keybox" style="gap:12px">
+        <strong style="font-size:18px">Pague com Pix pela chave celular</strong>
+        <span class="hint">1. No app do seu banco, escolha <b>Pix → Pagar com chave</b> (ou Transferir).</span>
+        <span class="hint">2. Escolha <b>Celular</b> e cole a chave:</span>
         <div class="code">
-          <textarea id="pixcode" readonly></textarea>
-          <button type="button" class="btn-ghost" id="copyBtn" style="align-self:stretch">Copiar</button>
-        </div>
-        <span class="hint" id="copyMsg" aria-live="polite">Pix para Fabio Pereira Silva</span>
-      </div>
-      <div class="stack keybox" style="gap:10px">
-        <strong style="font-size:16px">Deu erro no app do banco? Pague pela chave</strong>
-        <span class="hint">No app do banco, escolha <b>Pix → Pagar com chave</b>, cole a chave abaixo e digite o valor <b id="kValor">R$ 20,00</b>.</span>
-        <div class="code">
-          <span class="keyval" style="font-size:13px;word-break:break-all;padding-block:10px">983269ba-c4cd-4dcb-8755-a71e64b3d96f</span>
+          <span class="keyval">(98) 99967-9927</span>
           <button type="button" class="btn-ghost" id="copyKeyBtn" style="align-self:stretch">Copiar chave</button>
         </div>
-        <span class="hint" id="keyMsg" aria-live="polite">Confira se aparece o nome Fabio Pereira Silva antes de confirmar.</span>
-        <span class="hint">Ainda com problema? Chame no WhatsApp <b>(98) 99967-9927</b>.</span>
+        <span class="hint">3. Digite o valor <b id="kValor" style="color:var(--fg);font-size:18px">R$ 20,00</b> e confira se aparece <b>Fabio Pereira Silva</b>.</span>
+        <span class="hint" id="keyMsg" aria-live="polite"></span>
+        <span class="hint">Deu algum problema? Chame no WhatsApp <b>(98) 99967-9927</b>.</span>
       </div>
+      <div hidden><div id="qr"></div><textarea id="pixcode"></textarea><button type="button" id="copyBtn"></button><span id="copyMsg"></span></div>
       <div class="upload">
         <label for="file" style="font-weight:700">Já pagou? Envie o comprovante</label>
         <input id="file" type="file" accept="image/*,application/pdf">
@@ -635,9 +629,9 @@ var CONFIG = {
   }
 
   $('copyKeyBtn').addEventListener('click', function(){
-    var ok = function(){ $('keyMsg').textContent = 'Chave copiada. Cole no app do banco em Pix → Pagar com chave.'; };
-    var no = function(){ $('keyMsg').textContent = 'Não consegui copiar. Toque e segure na chave para copiar.'; };
-    try { navigator.clipboard.writeText('983269ba-c4cd-4dcb-8755-a71e64b3d96f').then(ok, no); } catch(e){ no(); }
+    var ok = function(){ $('keyMsg').textContent = 'Chave copiada. Cole no app do banco, em Pix → Celular.'; };
+    var no = function(){ $('keyMsg').textContent = 'Não consegui copiar. Digite a chave: 98999679927'; };
+    try { navigator.clipboard.writeText('98999679927').then(ok, no); } catch(e){ no(); }
   });
   $('copyBtn').addEventListener('click', function(){
     var ta = $('pixcode');
